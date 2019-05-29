@@ -5,16 +5,19 @@ var jwt = require('jsonwebtoken');
 
 
 router.post('/register',  function(req,res,next){
+ console.log("adding email")
   var user = new User({
     email: req.body.email,
     username: req.body.username,
-    password: User.hashPassword(req.body.password),
-    creation_dt: Date.now()
+    password: User.hashPassword(req.body.password)
+    
+ 
   });
 
   let promise = user.save();
 
   promise.then(function(doc){
+    console.log("juser created")
     return res.status(201).json(doc);
   })
 
@@ -32,7 +35,7 @@ router.post('/login', function(req,res,next){
     if(doc) {
       if(doc.isValid(req.body.password)){
           // generate token
-          let token = jwt.sign({username:doc.username},'secret', {expiresIn : '3h'});
+          let token = jwt.sign({username:doc.username,email:doc.email},'secret', {expiresIn : '3h'});
 
           return res.status(200).json(token);
 
@@ -52,11 +55,12 @@ router.post('/login', function(req,res,next){
 
 
 router.get('/username', verifyToken, function(req,res,next){
+  //console.log(decode)
   return res.status(200).json(decodedToken.username);
 })
-
-router.get('/email',verifyToken,function(req,res,next){
-  return res.status(200).json(decodedToken.email);
+router.get('/email', verifyToken, function(req,res,next){
+ // console.log(decode)
+return res.status(200).json(decodedToken.email);
 })
 
 
