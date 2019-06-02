@@ -28,6 +28,11 @@ router.post('/register',  function(req,res,next){
 
 
 
+
+
+
+
+
 router.post('/login', function(req,res,next){
    let promise = User.findOne({email:req.body.email}).exec();
 
@@ -62,6 +67,45 @@ router.get('/email', verifyToken, function(req,res,next){
  // console.log(decode)
 return res.status(200).json(decodedToken.email);
 })
+
+
+router.get('/resetPassword/:email',function(req,res)
+{
+    User.findOne({email:req.params.email}).select().exec(function(err,user)
+    {
+
+      if(err) 
+      {
+        res.json({ sucess:false, message:err});
+      }
+      else{
+        if(!User){
+          res.json({success:false, message:'Email is not found'});
+        }
+        else{
+          res.json({success:true , message:'vfoefjfiuei'});
+        }
+        else{
+           var email={
+             from:'Lunch with ME',
+             to: user.email,
+             subject:'Reset Password',
+             text:'Hello'+user.username+' you have requested to reset your password'   
+
+           };
+           client.sendMail(email,function(err,info){
+             if(err) console.log(err);
+           })
+        }
+
+      }
+    });
+}
+)
+
+
+
+
 
 
 var decodedToken='';
